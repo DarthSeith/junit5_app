@@ -2,5 +2,6 @@ git status
 git add .
 git commit -m "se agrega XXXX JUnit5"
 git push origin main
+git tag  #ver el ultimo y agregar 1 mas al ultimo tag
 git tag v0.0.4 -m "version se agrega XXXX JUnit5"
 git push --tags

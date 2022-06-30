@@ -1,6 +1,8 @@
 package org.arthas.junit5app.ejemplos.models;
 
 import org.arthas.junit5app.ejemplos.exceptions.DineroInsuficienteException;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -11,16 +13,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CuentaTest {
 
     @Test
+    @DisplayName("Probando el nombre de la cuenta corriente")
     void testNombreCuenta() {
         Cuenta cuenta = new Cuenta("NOMBRE1", new BigDecimal("1000.982"));
         String esperado = "NOMBRE1";
         String real = cuenta.getPersona();
         assertNotNull(real, "La cuenta no puede ser nula");
         assertEquals(esperado, real, "El nombre de la cuenta no es el que se esperaba");
-        assertTrue(real.equals("NOMBRE12"), "Nombre de la cuenta debe ser esperado al actual");
+        assertTrue(real.equals("NOMBRE1"), "Nombre de la cuenta debe ser esperado al actual");
     }
 
     @Test
+    @DisplayName("probando  el saldo de la cuenta corriente")
     void testSaldoCuenta() {
         Cuenta cuenta = new Cuenta("nombre1", new BigDecimal("1000.982"));
         assertNotNull(cuenta.getSaldo());
@@ -31,6 +35,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("si las referencias sean iguales son iguales")
     void testReferenciaCuenta() {
         Cuenta cuenta = new Cuenta("John", new BigDecimal("999.009"));
         assertNotNull(cuenta.getSaldo());
@@ -77,8 +82,14 @@ class CuentaTest {
         assertEquals(esperado, actual);
     }
 
+    /**
+     * se agregar fail() para que falle intencionalmente y
+     * se agrega @Disabled para que no ejecute el Test, pero si va a salir en el reporte
+     */
     @Test
+    @Disabled
     void testTransferirDineroCuentas() {
+        fail();
         Cuenta origen = new Cuenta("Gigio", new BigDecimal("2500"));
         Cuenta destino = new Cuenta("Memo", new BigDecimal("1000"));
 
@@ -95,6 +106,7 @@ class CuentaTest {
      * se agrupan
      */
     @Test
+    @DisplayName("Probando relaciones entre cuenta y el banco con assertAll")
     void testRelacionBancoCuenta() {
         Cuenta origen = new Cuenta("Gigio", new BigDecimal("2500"));
         Cuenta destino = new Cuenta("Memo", new BigDecimal("1000"));
@@ -107,13 +119,13 @@ class CuentaTest {
         banco.transferir(origen, destino, new BigDecimal("500"));
         assertAll(
                 () -> {
-                    assertEquals("1501", destino.getSaldo().toPlainString(), ()->"el valor no correponde");
+                    assertEquals("1500", destino.getSaldo().toPlainString(), ()->"el valor no correponde");
                 },
                 () -> {
                     assertEquals("2000", origen.getSaldo().toPlainString(), ()->"el valor no correponde");
                 },
                 () -> {
-                    assertEquals(3, banco.getCuentas().size(), ()->"La cantidad no es correcta");
+                    assertEquals(2, banco.getCuentas().size(), ()->"La cantidad no es correcta");
                 },
                 () -> {
                     assertEquals("Banco del estado", origen.getBanco().getNombre());
