@@ -9,11 +9,21 @@ public class Cuenta {
 
     public Cuenta(String persona, BigDecimal saldo) {
         this.saldo = saldo;
-        this.persona = persona.toUpperCase();
+        this.persona = persona;
     }
 
     private String persona;
     private BigDecimal saldo;
+
+    private Banco banco;
+
+    public Banco getBanco() {
+        return banco;
+    }
+
+    public void setBanco(Banco banco) {
+        this.banco = banco;
+    }
 
     public String getPersona() {
         return persona;

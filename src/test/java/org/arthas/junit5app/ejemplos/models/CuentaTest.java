@@ -76,4 +76,45 @@ class CuentaTest {
 
         assertEquals(esperado, actual);
     }
+
+    @Test
+    void testTransferirDineroCuentas() {
+        Cuenta origen = new Cuenta("Gigio", new BigDecimal("2500"));
+        Cuenta destino = new Cuenta("Memo", new BigDecimal("1000"));
+
+        Banco banco = new Banco();
+        banco.setNombre("bancoTest1");
+        banco.transferir(origen, destino, new BigDecimal("500"));
+        assertEquals("1500", destino.getSaldo().toPlainString());
+        assertEquals("2000", origen.getSaldo().toPlainString());
+
+    }
+
+    @Test
+    void testRelacionBancoCuenta() {
+        Cuenta origen = new Cuenta("Gigio", new BigDecimal("2500"));
+        Cuenta destino = new Cuenta("Memo", new BigDecimal("1000"));
+
+        Banco banco = new Banco();
+        banco.addCuenta(origen);
+        banco.addCuenta(destino);
+
+        banco.setNombre("Banco del estado");
+        banco.transferir(origen, destino, new BigDecimal("500"));
+        assertEquals("1500", destino.getSaldo().toPlainString());
+        assertEquals("2000", origen.getSaldo().toPlainString());
+
+        assertEquals(2, banco.getCuentas().size());
+        assertEquals("Banco del estado", origen.getBanco().getNombre());
+
+        assertEquals("Gigio", banco.getCuentas().stream()
+                .filter(c -> c.getPersona().equals("Gigio"))
+                .findFirst()
+                .get().getPersona()
+        );
+
+        assertTrue(banco.getCuentas().stream()
+                .anyMatch(c -> c.getPersona().equals("Memo"))
+        );
+    }
 }
