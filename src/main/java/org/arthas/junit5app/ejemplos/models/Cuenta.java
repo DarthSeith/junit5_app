@@ -1,5 +1,7 @@
 package org.arthas.junit5app.ejemplos.models;
 
+import org.arthas.junit5app.ejemplos.exceptions.DineroInsuficienteException;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -40,8 +42,13 @@ public class Cuenta {
 
 
     public void debito(BigDecimal monto) {
-        this.saldo = this.saldo.subtract(monto);
+        BigDecimal saldo = this.saldo.subtract(monto);
+        if (saldo.compareTo(BigDecimal.ZERO) < 0) {
+            throw new DineroInsuficienteException("Dinero Insuficiente");
+        }
+        this.saldo = saldo;
     }
+
 
     public void credito(BigDecimal monto) {
         this.saldo = this.saldo.add(monto);
