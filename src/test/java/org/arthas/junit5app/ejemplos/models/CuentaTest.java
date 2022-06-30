@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CuentaTest {
 
     Cuenta cuenta;
@@ -27,6 +27,16 @@ class CuentaTest {
     @AfterEach
     void tearDown() {
         System.out.println("Finalizando el metodo de prueba");
+    }
+
+    @BeforeAll
+    void beforeAll() {
+        System.out.println("inicializando el test");
+    }
+
+    @AfterAll
+    void afterAll() {
+        System.out.println("finalizando el test");
     }
 
     /**
