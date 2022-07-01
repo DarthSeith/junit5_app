@@ -343,4 +343,21 @@ class CuentaTest {
         System.out.println("se ejecuta esto si o si");
 
     }
+
+    /**
+     * Test que se repite 5 para este ejemplo= @RepeatedTest(value = 5, name = "Repeticion numero {currentRepetition} de {totalRepetitions}")
+     */
+    @RepeatedTest(value = 5, name = "Repeticion numero {currentRepetition} de {totalRepetitions}")
+    @DisplayName("Repeticion")
+    void testRepeticion(RepetitionInfo info) {
+        if(info.getCurrentRepetition()== 3){
+            System.out.println("Hacer algo con el "+info.getCurrentRepetition());
+        }
+        //Cuenta cuenta = new Cuenta("John", new BigDecimal("999.009"));
+        cuenta.debito(new BigDecimal("100"));
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(900, cuenta.getSaldo().intValue());
+        assertEquals("900.982", cuenta.getSaldo().toPlainString());
+    }
+
 }
