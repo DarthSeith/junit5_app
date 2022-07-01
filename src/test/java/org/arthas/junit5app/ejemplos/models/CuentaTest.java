@@ -1,13 +1,17 @@
 package org.arthas.junit5app.ejemplos.models;
 
+import jdk.jfr.Enabled;
 import org.arthas.junit5app.ejemplos.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CuentaTest {
 
     Cuenta cuenta;
@@ -30,12 +34,12 @@ class CuentaTest {
     }
 
     @BeforeAll
-    void beforeAll() {
+    static void beforeAll() {
         System.out.println("inicializando el test");
     }
 
     @AfterAll
-    void afterAll() {
+    static void afterAll() {
         System.out.println("finalizando el test");
     }
 
@@ -175,5 +179,81 @@ class CuentaTest {
         );
 
 
+    }
+
+    /**
+     * se ejecuta en cualquier Sistema Operativo (OS.WINDOWS, OS.LINUX, etc)
+     */
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testSoloWindows() {
+    }
+
+    @Test
+    @EnabledOnOs(OS.LINUX)
+    void testSoloLinux() {
+    }
+
+    @Test
+    @EnabledOnOs(OS.MAC)
+    void testSoloMac() {
+    }
+
+    /**
+     * No se ejecuta en Sistema Operativo que se selecciona (OS.WINDOWS)
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testNoWindows() {
+    }
+
+    /**
+     * se ejecuta en cualquier JDK (JRE.JAVA_18,JRE.JAVA_8, etc)
+     */
+    @Test
+    @EnabledOnJre(JRE.JAVA_18)
+    void onlyJdk18() {
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    void onlyJdk8() {
+    }
+
+
+    @Test
+    void imprimirSystemProperties() {
+        Properties properties = System.getProperties();
+        properties.forEach((k, v) -> System.out.println(k + "->" + v));
+    }
+
+    @Test
+   // @EnabledIfSystemProperty(named = "java.version", matches = "18.0.1.1")
+    @EnabledIfSystemProperty(named = "java.version", matches = "18.0.*")
+    void testJavaVersionProperty() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "os.arch", matches = "amd64")
+    void testArch64() {
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "os.arch", matches = ".*32*")
+    void testNoArch64() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "user.name", matches = "Arthas")
+    void testUserName() {
+    }
+
+    /**
+     * configurar una variable de entorno
+     * agregando "-DENV=dev" en los properties del sistema
+     */
+    @Test
+    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+    void testEnv() {
     }
 }
