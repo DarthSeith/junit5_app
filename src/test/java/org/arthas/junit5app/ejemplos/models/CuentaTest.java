@@ -229,7 +229,7 @@ class CuentaTest {
     }
 
     @Test
-   // @EnabledIfSystemProperty(named = "java.version", matches = "18.0.1.1")
+    // @EnabledIfSystemProperty(named = "java.version", matches = "18.0.1.1")
     @EnabledIfSystemProperty(named = "java.version", matches = "18.0.*")
     void testJavaVersionProperty() {
     }
@@ -268,7 +268,7 @@ class CuentaTest {
     }
 
     @Test
-   // @EnabledIfEnvironmentVariable(named = "JAVA_HOME", matches = "C:\\Program Files\\OpenJDK\\openjdk-8u302-b08")
+    // @EnabledIfEnvironmentVariable(named = "JAVA_HOME", matches = "C:\\Program Files\\OpenJDK\\openjdk-8u302-b08")
     @EnabledIfEnvironmentVariable(named = "JAVA_HOME", matches = ".*openjdk-8u302-b08")
     void testJavaHome() {
     }
@@ -276,5 +276,39 @@ class CuentaTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "dev")
     void testEnvironmentVariable() {
+    }
+
+    /**
+     * Assumptions.assumeTrue para validar si sigue con la ejecucion o no
+     */
+    @Test
+    @DisplayName("assumeTrue se ejecuta todo o se detiene")
+    void testSaldoCuentaDev() {
+        boolean isDev = "dev".equals(System.getProperty("ENV"));
+        Assumptions.assumeTrue(isDev);
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(1000.982, cuenta.getSaldo().doubleValue());
+        assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        System.out.println("Si es correcto assumeTrue ejecuta todo");
+
+    }
+
+    /**
+     * Assumptions.assumingThat para ejecutar solo el blocke de codigo
+     */
+    @Test
+    @DisplayName("assumingThat se ejecuta solo  el block de codigo")
+    void testSaldoCuentaDev2() {
+        boolean isDev = "dev".equals(System.getProperty("ENV"));
+        Assumptions.assumingThat(isDev, () -> {
+            assertNotNull(cuenta.getSaldo());
+            assertEquals(1000.982, cuenta.getSaldo().doubleValue());
+            assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+            System.out.println("Si es correcto assumeTrue ejecuta todo lo que se encuentra adentro");
+        });
+        System.out.println("se ejecuta esto si o si");
+
     }
 }
