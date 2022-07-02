@@ -4,8 +4,15 @@ import jdk.jfr.Enabled;
 import org.arthas.junit5app.ejemplos.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,6 +53,7 @@ class CuentaTest {
 
     /**
      * Una clase anidada de Sistema Operativov
+     *
      * @Nested se indica que tipo de clase es
      */
     @Nested
@@ -344,20 +352,96 @@ class CuentaTest {
 
     }
 
+
+
     /**
      * Test que se repite 5 para este ejemplo= @RepeatedTest(value = 5, name = "Repeticion numero {currentRepetition} de {totalRepetitions}")
      */
     @RepeatedTest(value = 5, name = "Repeticion numero {currentRepetition} de {totalRepetitions}")
     @DisplayName("Repeticion")
     void testRepeticion(RepetitionInfo info) {
-        if(info.getCurrentRepetition()== 3){
-            System.out.println("Hacer algo con el "+info.getCurrentRepetition());
+        if (info.getCurrentRepetition() == 3) {
+            System.out.println("Hacer algo con el " + info.getCurrentRepetition());
         }
         //Cuenta cuenta = new Cuenta("John", new BigDecimal("999.009"));
         cuenta.debito(new BigDecimal("100"));
         assertNotNull(cuenta.getSaldo());
         assertEquals(900, cuenta.getSaldo().intValue());
         assertEquals("900.982", cuenta.getSaldo().toPlainString());
+    }
+
+    @Nested
+    @DisplayName("ParameterizedTest - Pruebas Parametrizadas ")
+    class PruebasParametrizadas{
+        /**
+         * Se utiliza @ParameterizedTest similar a la repeticion pero este va a depender de cuantos parametros tenga @ValueSource
+         * en este caso una cadena de String
+         *
+         * @param monto
+         */
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+        @DisplayName("ParameterizedTestValueSource")
+        @ValueSource(strings = {"100", "200", "300", "500", "700", "1000.0001"})
+        void testValueSource(String monto) {
+            System.out.println("Monto del string:" + monto);
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        /**
+         * Se utiliza @ParameterizedTest similar a la repeticion pero este va a depender de cuantos parametros tenga @CsvSource
+         * en este caso un csvSource
+         *
+         * @param monto
+         */
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+        @DisplayName("ParameterizedTestCsvSource")
+        @CsvSource({"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000.0001"})
+        void testCsvSource(String index, String monto) {
+            System.out.println("Monto del string:" + monto + " |con el index:"+index);
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        /**
+         * Se utiliza @ParameterizedTest similar a la repeticion pero este va a depender de cuantos parametros tenga @ValueSource
+         * en este caso un CsvFileSource, dejando el archivo data.csv en la carpeta resources
+         *
+         * @param monto
+         */
+        @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+        @DisplayName("ParameterizedTestCsvFileSource")
+        @CsvFileSource(resources = "/data.csv")
+        void testCsvFileSource(String monto, String secondColumn) {
+            System.out.println("Monto del string:" + monto +" |segunda columna:"+secondColumn);
+            cuenta.debito(new BigDecimal(monto));
+            assertNotNull(cuenta.getSaldo());
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+
+    }
+
+    /**
+     * Se utiliza @ParameterizedTest similar a la repeticion pero este va a depender de cuantos parametros tenga @ValueSource
+     * en este caso un MethodSource...utiliza el metodo "montoList", como es un metodo estatico tiene que estar en la raiz
+     *
+     * @param monto
+     */
+    @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+    @DisplayName("ParameterizedTestMethodSource")
+    @MethodSource( "montoList")
+    void testCsvFileSource(String monto) {
+        System.out.println("Monto del string:" + monto );
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    static List<String> montoList(){
+        return Arrays.asList("100", "200", "300", "500", "700", "1000.0001");
     }
 
 }
