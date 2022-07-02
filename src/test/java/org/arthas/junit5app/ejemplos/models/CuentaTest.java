@@ -10,10 +10,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,8 +79,8 @@ class CuentaTest {
         @DisplayName("El nombre")
         void testNombreCuenta() {
 
-            if (testInfo.getTags().contains("cuenta")){
-                testReporter.publishEntry("tiene el TAG: "+testInfo.getTags()+ " y se podria hacer algo");
+            if (testInfo.getTags().contains("cuenta")) {
+                testReporter.publishEntry("tiene el TAG: " + testInfo.getTags() + " y se podria hacer algo");
             }
             String esperado = "NOMBRE1";
             String real = cuenta.getPersona();
@@ -473,6 +475,32 @@ class CuentaTest {
 
     static List<String> montoList() {
         return Arrays.asList("100", "200", "300", "500", "700", "1000.0001");
+    }
+
+    /**
+     * Se ejecuta pruebas unitarias con e ejemplos de TimeOut
+     */
+    @Nested
+    @Tag("TimeOut")
+    class EjemploTimeOut {
+        @Test
+        @Timeout(1)
+        void pruebaTimeOut() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        @Test
+        @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
+        void pruebaTimeOut2() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(400);
+        }
+
+        @Test
+        void testTimeoutAssertions() {
+            assertTimeout(Duration.ofMillis(500), ()->{
+                TimeUnit.MILLISECONDS.sleep(400);
+            });
+        }
     }
 
 }
