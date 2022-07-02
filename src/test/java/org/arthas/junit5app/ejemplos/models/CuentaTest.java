@@ -1,6 +1,5 @@
 package org.arthas.junit5app.ejemplos.models;
 
-import jdk.jfr.Enabled;
 import org.arthas.junit5app.ejemplos.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
@@ -24,13 +23,22 @@ class CuentaTest {
 
     Cuenta cuenta;
 
+    private TestInfo testInfo;
+    private TestReporter testReporter;
+
     /**
      * se ejecuta antes de inicializar antes de cada @Test
+     * se agrega TestInfo y TestReporter
      */
     @BeforeEach
-    void initMetodoTest() {
+    void initMetodoTest(TestInfo testInfo, TestReporter testReporter) {
         this.cuenta = new Cuenta("NOMBRE1", new BigDecimal("1000.982"));
+        this.testInfo = testInfo;
+        this.testReporter = testReporter;
         System.out.println("Iniciando el metodo");
+        testReporter.publishEntry("Ejecutanto " + testInfo.getDisplayName() + " " +
+                testInfo.getTestMethod().orElse(null).getName() + " con el TAG: " +
+                testInfo.getTags());
     }
 
     /**
@@ -69,6 +77,9 @@ class CuentaTest {
         @DisplayName("El nombre")
         void testNombreCuenta() {
 
+            if (testInfo.getTags().contains("cuenta")){
+                testReporter.publishEntry("tiene el TAG: "+testInfo.getTags()+ " y se podria hacer algo");
+            }
             String esperado = "NOMBRE1";
             String real = cuenta.getPersona();
             assertNotNull(real, "La cuenta no puede ser nula");
